@@ -10,7 +10,10 @@ export async function registerUser(req,res){
 export async function loginUser(req,res){
      const {email,password}=req.body;
      if(!email || !password){
-        return res.status(400).json({message:"email and password are required"});
+        return res.status(400).json({message:"email and password are required",
+            status:"failed"
+        }
+        );
     }
     const user=await User.findOne({email});
     if(!user){
@@ -18,7 +21,9 @@ export async function loginUser(req,res){
     }
     const isMatch=await user.comparePassword(password);
     if(!isMatch){
-        return res.status(401).json({message:"invalid credentials"});
+        return res.status(401).json({message:"invalid credentials",
+            status:"failed"
+        });
     }
     return res.status(200).json({message:"login successful"});
 
