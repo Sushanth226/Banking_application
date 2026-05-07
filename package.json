@@ -18,5 +18,14 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sushanth226/Banking_application.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Sushanth226/Banking_application/issues"
+  },
+  "homepage": "https://github.com/Sushanth226/Banking_application#readme",
+  "type": "commonjs"
 }
