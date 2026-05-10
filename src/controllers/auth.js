@@ -1,13 +1,24 @@
 const User=require('../models/userModel');
-export async function registerUser(req,res){
+
+// Register a new user (controller function)
+async function registerUser(req,res){
     const {email,username,password}=req.body;
     if(!email || !username || !password){
         return res.status(400).json({message:"email,username and password are required"});
     }
+    const userExists=await User.findOne({email:email});
+    if(userExists){
+        return res.status(400).json(
+            {message:"user already exists",
+                status:"failed"
+            });
+    }
     await User.create({email,username,password});
     return res.status(200).json({message:"The User is Created"});
 }
-export async function loginUser(req,res){
+
+// Login a user
+async function loginUser(req,res){
      const {email,password}=req.body;
      if(!email || !password){
         return res.status(400).json({message:"email and password are required",
@@ -26,5 +37,6 @@ export async function loginUser(req,res){
         });
     }
     return res.status(200).json({message:"login successful"});
-
 }
+
+module.exports = { registerUser, loginUser };
