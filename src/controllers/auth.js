@@ -1,6 +1,6 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
-
+const { sendEmail } = require("../services/gmail");
 // Register a new user (controller function)
 async function registerUser(req, res) {
     const { email, name, password } = req.body;
@@ -23,6 +23,15 @@ async function registerUser(req, res) {
         { expiresIn: '1h' }
     );
     res.cookie('token', token);
+    sendEmail(
+        email,
+        "Welcome to the Bankend Ledger(register)",
+        `Hi,${name} to the bankend ledger`,
+        `
+        <h1>Simple html test</h1>
+        <p>para</p>
+        `
+    ).catch(console.error);
     return res.status(201).json({
         user: {
             _id: user._id,
@@ -61,6 +70,19 @@ async function loginUser(req, res) {
         { expiresIn: '1h' }
     );
     res.cookie('token', token);
+
+
+    sendEmail(
+        email,
+        "Welcome to the Bankend Ledger(Login)",
+        `Hi,${user.name} to the bankend ledger`,
+        `
+        <h1>Simple html test<h1>
+        <p>para<p>
+        `
+    ).catch(console.error);
+
+
     return res.status(201).json({
         user: {
             _id: user._id,
