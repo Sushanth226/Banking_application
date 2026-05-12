@@ -1,5 +1,6 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
+
 // Register a new user (controller function)
 async function registerUser(req, res) {
     const { email, name, password } = req.body;
