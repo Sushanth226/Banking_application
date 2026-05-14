@@ -38,6 +38,24 @@ async function createTransaction(req,res){
 
     // 2.Validate IdempotencyKey
 
+    const checkIdemotencyKey=await transactionModel.transactionModel.findOne({
+        idempotencyKey:idempotencyKey,
+    });
+
+    if(checkIdemotencyKey){
+        if(checkIdemotencyKey.status==="COMPLETED"){
+            return res.status(200).json("Transaction is completed");
+        }
+        if(checkIdemotencyKey.status==="PENDING"){
+            return res.status(200).json("Transaction is pending");
+        }
+        if(checkIdemotencyKey.status==="FAILED"){
+            return res.status(400).json("The transaction failed , retry");
+        }
+        if(checkIdemotencyKey.status==="REVERSED"){
+            return res.status(500).json("The transaction is reversed, retry");
+        }
+    }
     
 
 
