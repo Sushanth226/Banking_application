@@ -1,5 +1,6 @@
 const transactionModel=require("../models/transactionModel");
 const ledgerModel=require("../models/ledgerModel");
+const accountModel=require("../models/accountModel");
 /*
 step(10) transaction flow:
 1.Validate request.
@@ -23,6 +24,22 @@ async function createTransaction(req,res){
     if(!fromAccount || !toAccount || !amount || !idempotencyKey){
         return res.status(400).json("missing fromAccount or toAccount or amount or idempotencyKey");
     }
+
+    const fromUserAccount=await accountModel.Account.findOne({
+        _id:fromAccount 
+    });
+    const toUserAccount = await accountModel.Account.findOne({
+        _id:toAccount
+    });
+
+    if(!fromUserAccount || !toUserAccount){
+        return res.status(400).json("Invalid From Account or To Account");
+    }
+
+    // 2.Validate IdempotencyKey
+
+    
+
 
 
 }
