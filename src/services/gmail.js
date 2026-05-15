@@ -31,4 +31,39 @@ const sendEmail=async (to,subject,text,html)=>{
    });
 
 };
+const sendTransactionSuccessEmail = async (
+    userEmail,    name,    amount,    toaccount) => {
+
+    const subject = "Transaction successful";
+
+    const text = `Hello ${name},
+
+Your transaction of ${amount} is sent to ${toaccount}`;
+
+    await transporter.sendMail({
+        from: `"Sushanth" <${process.env.EMAIL_USER}>`,
+        to: userEmail,
+        subject,
+        text
+    });
+
+};
+
+const sendTransactionFailureEmail = async (
+    userEmail,    name,    amount,    toaccount) => {
+
+    const subject = "Transaction Failed";
+
+    const text = `Hello ${name},
+
+Your transaction of ${amount} is failed to go ${toaccount}`;
+
+    await transporter.sendMail({
+        from: `"Sushanth" <${process.env.EMAIL_USER}>`,
+        to: userEmail,
+        subject,
+        text
+    });
+
+};
 module.exports={sendEmail};

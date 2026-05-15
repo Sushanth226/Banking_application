@@ -1,6 +1,8 @@
 const transactionModel=require("../models/transactionModel");
 const ledgerModel=require("../models/ledgerModel");
 const accountModel=require("../models/accountModel");
+const mongoose=require("mongoose");
+const email=require("../services/gmails");
 /*
 step(10) transaction flow:
 1.Validate request.
@@ -50,13 +52,65 @@ async function createTransaction(req,res){
             return res.status(200).json("Transaction is pending");
         }
         if(checkIdemotencyKey.status==="FAILED"){
-            return res.status(400).json("The transaction failed , retry");
+            return res.status(500).json("The transaction failed , retry");
         }
         if(checkIdemotencyKey.status==="REVERSED"){
             return res.status(500).json("The transaction is reversed, retry");
         }
     }
+
+    //3.Check the account status
     
+    if(fromAccount.status!="ACTIVE"){
+        return res.status(400).json("The From Account should be ACTIVE");
+    }
+    if(toAccount.status!="ACTIVE"){
+        return res.status(400).json("The To Account should be ACTIVE")
+    }
+
+    // 4.Derive the senders balance from the ledger.
+    const balance = await fromUserAccount.getBalance();
+
+    if(balance<amount){
+        return res.status(400).json("Insufficient balance. Current balance is ${balance}. The required amount is ${amount}");
+    }
+
+    // 5.Create Transaction(PENDING)
+
+     const session = await mongoose.startSession();
+     session.startTransaction();
+     const transaction=await transactionModel.Transaction.create({
+        fromAccount,
+        toAccount,
+        amount,
+        idempotencyKey
+     },
+    {
+        session
+    })
+    
+    const debitLedgerEntry=await ledgerModel.Ledger.create({
+        fromAccount,
+        amount,
+        transacition,
+        Type:"DEBIT"
+    });
+    
+    const creditLedgerEntry=await ledgerModel.Ledger.create({
+        toAccount,
+        amount,
+        transacition,
+        Type:"CREDIT"
+    });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    // 10.email notification
+
+    await email.sendTransactionSuccessEmail(fromAccount.email,fromAccount.name,amount,toAccount.name);
+   
+    return res.status(201).json("The transaction is successfully completed");
 
 
 
