@@ -9,4 +9,7 @@ app.use(cookieParser());
 app.use('/auth',userRoutes);
 app.use('/account',accountRoutes);
 app.use("/transaction",transactionRoutes);
+app.use((req,res)=>{
+    res.status(404).json("Invalid Route");
+})
 module.exports=app;

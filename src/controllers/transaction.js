@@ -45,7 +45,7 @@ async function createTransaction(req,res){
     });
 
     if(checkIdemotencyKey){
-        if(checkIdemotencyKey.status==="COMPLETED"){
+        if(checkIdemotencyKey.status==="COMPLETE"){
             return res.status(200).json("Transaction is completed");
         }
         if(checkIdemotencyKey.status==="PENDING"){
@@ -79,33 +79,43 @@ async function createTransaction(req,res){
 
      const session = await mongoose.startSession();
      session.startTransaction();
-     const transactionResult=await transactionModel.transactionModel.create([{
-        fromAccount,
-        toAccount,
-        amount,
-        idempotencyKey
-     }],
-    {
-        session
-    })
-    const transaction = transactionResult[0];
-    
-    const debitLedgerEntry=await ledgerModel.Ledger.create({
-        account: fromAccount,
-        amount,
-        transaction,
-        Type:"DEBIT"
-    });
-    
-    const creditLedgerEntry=await ledgerModel.Ledger.create({
-        account: toAccount,
-        amount,
-        transaction,
-        Type:"CREDIT"
-    });
+     try {
+         const transactionResult=await transactionModel.transactionModel.create([{
+            fromAccount,
+            toAccount,
+            amount,
+            idempotencyKey
+         }],
+        {
+            session
+        })
+        const transaction = transactionResult[0];
+        
+        const debitLedgerEntry=await ledgerModel.Ledger.create([{
+            account: fromAccount,
+            amount,
+            transaction: transaction._id,
+            Type:"DEBIT"
+        }], { session });
+        
+        const creditLedgerEntry=await ledgerModel.Ledger.create([{
+            account: toAccount,
+            amount,
+            transaction: transaction._id,
+            Type:"CREDIT"
+        }], { session });
 
-    await session.commitTransaction();
-    session.endSession();
+        // 8.Mark transaction Completed.
+        transaction.status = "COMPLETE";
+        await transaction.save({ session });
+
+        await session.commitTransaction();
+    } catch (error) {
+        await session.abortTransaction();
+        throw error;
+    } finally {
+        session.endSession();
+    }
 
     // 10.email notification
 
@@ -129,35 +139,49 @@ async function initialFunds(req,res){
     const systemUser=await accountModel.findOne({
         user:req.user._id
     });
+    
+    if(!systemUser){
+        return res.status(400).json("The system user account is not present");
+    }
+    
     const session = await mongoose.startSession();
-         session.startTransaction();
-         const transactionResult=await transactionModel.transactionModel.create([{
-            fromAccount: systemUser,
+    session.startTransaction();
+    try {
+        const transactionResult=await transactionModel.transactionModel.create([{
+            fromAccount: systemUser._id,
             toAccount,
             amount,
             idempotencyKey
-         }],
+        }],
         {
             session
         })
         const transaction = transactionResult[0];
         
-        const debitLedgerEntry=await ledgerModel.Ledger.create({
-            account: systemUser,
+        const debitLedgerEntry=await ledgerModel.Ledger.create([{
+            account: systemUser._id,
             amount,
-            transaction,
+            transaction: transaction._id,
             Type:"DEBIT"
-        });
+        }], { session });
         
-        const creditLedgerEntry=await ledgerModel.Ledger.create({
+        const creditLedgerEntry=await ledgerModel.Ledger.create([{
             account: toAccount,
             amount,
-            transaction,
+            transaction: transaction._id,
             Type:"CREDIT"
-        });
+        }], { session });
     
+        transaction.status = "COMPLETE";
+        await transaction.save({ session });
+
         await session.commitTransaction();
+    } catch (error) {
+        await session.abortTransaction();
+        throw error;
+    } finally {
         session.endSession();
+    }
     
     
 

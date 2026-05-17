@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const { sendEmail } = require("../services/gmail");
+const blackListed=require("../models/blackListed");
 // Register a new user (controller function)
 async function registerUser(req, res) {
     try {
@@ -103,4 +104,21 @@ async function loginUser(req, res) {
     }
 }
 
-module.exports = { registerUser, loginUser };
+// logout the user
+
+async function logOut(req,res){
+    const token=req.cookies.token;
+    if(!token){
+        return res.status(200).json("Logout successfull");
+    }
+
+    const blacklisted=await blackListed.BlackListed.create({
+        token:token
+    });
+
+    res.clearCookie(token);
+    return res.status(200).json("Logout successfull");
+   
+}
+
+module.exports = { registerUser, loginUser, logOut };
