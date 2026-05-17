@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const ledgerModel=require("ledgerModel");
+const ledgerModel=require("./ledgerModel");
 const accountSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.ObjectId,
@@ -45,7 +45,7 @@ accountSchema.methods.getBalance = async function () {
                 totalDebit: {
                     $sum: {
                         $cond: [
-                            { $eq: ["$type", "DEBIT"] },
+                            { $eq: ["$Type", "DEBIT"] },
                             "$amount",
                             0
                         ]
@@ -55,7 +55,7 @@ accountSchema.methods.getBalance = async function () {
                 totalCredit: {
                     $sum: {
                         $cond: [
-                            { $eq: ["$type", "CREDIT"] },
+                            { $eq: ["$Type", "CREDIT"] },
                             "$amount",
                             0
                         ]

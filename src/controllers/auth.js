@@ -27,13 +27,14 @@ async function registerUser(req, res) {
         await sendEmail(
             email,
             "Welcome to the Bankend Ledger(register)",
-            `Hi,${name} to the bankend ledger`,
+            `Hi, ${name}, Welcome to the backend ledger`,
             `
             <h1>Simple html test</h1>
             <p>para</p>
             `
         ).catch(console.error);
         return res.status(201).json({
+            status: "success",
             user: {
                 _id: user._id,
                 email: user.email,
@@ -77,18 +78,19 @@ async function loginUser(req, res) {
         res.cookie('token', token);
 
 
-        sendEmail(
+        await sendEmail(
             email,
             "Welcome to the Bankend Ledger(Login)",
-            `Hi,${user.name} to the bankend ledger`,
+            `Hi, ${user.name}, Welcome to the backend ledger`,
             `
-            <h1>Simple html test<h1>
-            <p>para<p>
+            <h1>Simple html test</h1>
+            <p>para</p>
             `
         ).catch(console.error);
 
 
         return res.status(201).json({
+            status: "success",
             user: {
                 _id: user._id,
                 email: user.email,

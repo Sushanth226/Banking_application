@@ -1,8 +1,15 @@
 const express=require("express");
 const authMiddleware=require("../middleware/auth");
 const createTransaction=require("../controllers/transaction")
-const router=express.Router;
+const authSystemMiddleware=require("../middleware/authSystemMiddleware");
+const router=express.Router();
 
-router.post("/",authMiddleware.authMiddleware,createTransaction.createTransaction);
+router.post("/",authMiddleware,createTransaction.createTransaction);
 
-module.export=router;
+
+/*
+Route for the dummy account and dummy transaction amount.
+*/
+
+router.post("/system/initial-funds",authSystemMiddleware,createTransaction.initialFunds);
+module.exports=router;

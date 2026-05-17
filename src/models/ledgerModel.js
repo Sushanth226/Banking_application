@@ -2,19 +2,19 @@ const mongoose=require("mongoose");
 
 const ledgerSchema=new mongoose.Schema({
     account:{
-        type:mongoose.Schema.Types,
+        type:mongoose.Schema.Types.ObjectId,
         ref:"Account",
-        require:[true,"Account related to the transaction should be given"],
+        required:[true,"Account related to the transaction should be given"],
         index:true,
         immutable:true
     },
     amount:{
-        type:number,
-        require:[true,"Ammount in transactions should be mentioned in the ledger"],
+        type:Number,
+        required:[true,"Ammount in transactions should be mentioned in the ledger"],
         immutable:true
     },
     transaction:{
-        type:mongoose.Schema.Types,
+        type:mongoose.Schema.Types.ObjectId,
         ref:"Transaction",
         required:[true,"The transaction in which the ammount is transfered should be mentioned"],
         index:true,

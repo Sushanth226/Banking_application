@@ -2,19 +2,19 @@ const mongoose=require("mongoose");
 
 const transactionSchema=new mongoose.Schema({
     fromAccount:{
-        type:mongoose.Schema.type,
+        type:mongoose.Schema.Types.ObjectId,
         ref:"Account",
         required:[true,"The from account should be provided"],
         index:true
     },
     toAccount:{
-        type:mongoose.Schema.type,
+        type:mongoose.Schema.Types.ObjectId,
         ref:"Account",
         required:[true,"The to account should be provided"],
         index:true
     },
     status:{
-        type:string,
+        type:String,
         enum:{
             values:["PENDING","COMPLETE","FAILED","REVERSED"],
             message:"Status can be PENDING,COMPLETE,FAILED,REVERSED",
@@ -22,12 +22,12 @@ const transactionSchema=new mongoose.Schema({
         default:"PENDING"
     },
     amount:{
-        type:number,
+        type:Number,
         required:[true,"The amount involved in the transaction is needed"],
         min:[0,"The min amount for the transaction is 0 INR"]
     },
-    idempotencykey:{
-        type:string,
+    idempotencyKey:{
+        type:String,
         required:[true,"Client side generates"],
         index:true,
         unique:true
