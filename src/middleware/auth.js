@@ -9,10 +9,10 @@ const authMiddleware = async (req, res, next) => {
             return res.status(401).json({ message: "No token provided, authorization denied" });
         }
         //  Check out token in the blackListed list
-        const checkBlackList=await blackListed.BlackListed.find({
+        const checkBlackList=await blackListed.BlackListed.findOne({
             token
         });
-        if(cheakBlackList){
+        if(checkBlackList){
             return res.status(401).json("Invalid Token");
         }
         // token verify

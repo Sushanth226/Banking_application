@@ -25,14 +25,19 @@ async function registerUser(req, res) {
             { expiresIn: '1h' }
         );
         res.cookie('token', token);
+        const htmlContent = `
+        <div style="font-family: sans-serif; color: #333; line-height: 1.5;">
+            <p>Hello <strong>${name}</strong>,</p>
+            <p>Welcome to <strong>Apex Bank</strong>!</p>
+            <p>Your account has been successfully registered. You can now log in to view your dashboard, check your balance, and perform transactions.</p>
+            <p>Thank you for choosing us.</p>
+        </div>`;
+
         await sendEmail(
             email,
-            "Welcome to the Bankend Ledger(register)",
-            `Hi, ${name}, Welcome to the backend ledger`,
-            `
-            <h1>Simple html test</h1>
-            <p>para</p>
-            `
+            "Welcome to Apex Bank - Registration Successful",
+            `Hi ${name}, Welcome to the backend ledger`,
+            htmlContent
         ).catch(console.error);
         return res.status(201).json({
             status: "success",
@@ -79,14 +84,19 @@ async function loginUser(req, res) {
         res.cookie('token', token);
 
 
+        const htmlContent = `
+        <div style="font-family: sans-serif; color: #333; line-height: 1.5;">
+            <p>Hello <strong>${user.name}</strong>,</p>
+            <p>We noticed a new login to your <strong>Apex Bank</strong> account.</p>
+            <p>If this was you, no further action is needed. If you did not authorize this login, please contact our support team immediately.</p>
+            <p style="color: #666; font-size: 12px; margin-top: 20px;">Time: ${new Date().toLocaleString()}</p>
+        </div>`;
+
         await sendEmail(
             email,
-            "Welcome to the Bankend Ledger(Login)",
-            `Hi, ${user.name}, Welcome to the backend ledger`,
-            `
-            <h1>Simple html test</h1>
-            <p>para</p>
-            `
+            "New Login to your Apex Bank Account",
+            `Hi ${user.name}, Welcome to the backend ledger`,
+            htmlContent
         ).catch(console.error);
 
 
