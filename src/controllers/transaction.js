@@ -3,6 +3,7 @@ const ledgerModel=require("../models/ledgerModel");
 const accountModel=require("../models/accountModel");
 const mongoose=require("mongoose");
 const email=require("../services/gmail");
+const mlFraudService=require("../services/mlFraudService");
 /*
 step(10) transaction flow:
 1.Validate request.
@@ -73,6 +74,18 @@ async function createTransaction(req,res){
 
     if(balance<amount){
         return res.status(400).json(`Insufficient balance. Current balance is ${balance}. The required amount is ${amount}`);
+    }
+
+    // 4.5 Run Machine Learning Fraud Detection
+    const fraudScore = mlFraudService.predictFraud(amount);
+    
+    if (fraudScore > 0.85) {
+        console.log(`[ML FRAUD DETECTED] Score: ${fraudScore}, Amount: ${amount}`);
+        return res.status(403).json({
+            message: "Transaction blocked due to suspicious activity detected by our ML model.",
+            riskScore: (fraudScore * 100).toFixed(2) + "%",
+            status: "FAILED"
+        });
     }
 
     // 5.Create Transaction(PENDING)
