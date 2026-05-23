@@ -582,6 +582,6 @@ This project is open source under the MIT License.
 
 **[View on GitHub](https://github.com/Sushanth226/Banking_application)**
 
-Made with ❤️ by Sushanth Yadav
+Made with ❤️ by Suru Sushanth Sourya
 
 </div>
