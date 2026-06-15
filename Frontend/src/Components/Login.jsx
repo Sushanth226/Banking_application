@@ -3,12 +3,12 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 function Login(){
    const navigate=useNavigate();
-   const [name,setname]=useState("");
+   // const [name,setname]=useState("");
    const [password,setpassword]=useState("");
    const [email,setemail]=useState("");
-   const nameChange=(e)=>{
-      setname((name)=>e.target.value);
-   }
+   // const nameChange=(e)=>{
+   //    setname((name)=>e.target.value);
+   // }
    const passwordChange=(e)=>{
       setpassword((password)=>e.target.value);
    }
@@ -32,7 +32,7 @@ function Login(){
     <main>
       <section>
     <form onSubmit={goToDashBoard}>
-      <input type="text" onChange={nameChange} placeholder="Give name"/>
+      {/* <input type="text" onChange={nameChange} placeholder="Give name"/> */}
       <input type="text" onChange={emailChange} placeholder="Give email"/>
       <input type="text" onChange={passwordChange} placeholder="Give password"/>
       <button type="submit" >Submit</button>
