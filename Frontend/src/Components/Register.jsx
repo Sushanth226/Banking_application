@@ -15,7 +15,8 @@ function Register(){
    const emailChange=(e)=>{
       setemail((email)=>e.target.value);
    }
-   const goToDashBoard=async()=>{
+   const goToDashBoard=async(e)=>{
+       e.preventDefault();
        try{
           const result=await axios.post("http://localhost:5000/auth/register",{name,email,password},{ withCredentials:true});
           navigate("/dashboard");
